@@ -1,16 +1,12 @@
 /* created by @GustavoCostaW https://github.com/gustavocostaw/ngc-float-button  */
 
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import {BehaviorSubject, Subject, Subscription} from "rxjs/index";
 import { NgcFloatItemButtonComponent } from './ngc-float-item-button.component';
 import {
   Component,
   Input,
   ContentChildren,
   ElementRef,
-  HostListener,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   AfterContentInit,
