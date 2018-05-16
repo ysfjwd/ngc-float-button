@@ -6,11 +6,11 @@ Implementation for Angular v4+
 ![](http://g.recordit.co/yfaZdBGGCY.gif)
 
 
-## [`Demo`](http://bit.ly/2hydANi)
+## [`Demo`](http://bit.ly/2yIya2f)
 
 ## Installation
 
-First you need to install the npm module:
+First, you need to install the npm module:
 
 ```sh
 npm install ngc-float-button --save
@@ -18,13 +18,14 @@ npm install ngc-float-button --save
 
 ## Dependencies
 
-#### Angular Material
 #### Google Material Icons
-#### Angular v4+
+#### Angular Material >= beta.12
+#### Angular >= 4.4.4
 
 ## Usage
 
 #### 1. You need to add the Google Material icons in your `index.html`:
+##### The Google Material Icons is required by Angular Material <mat-icon> component
 
 ```HTML
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -32,7 +33,7 @@ npm install ngc-float-button --save
 
 Check the [`Google Material Icons site`](https://material.io/icons/) to see all icons
 
-#### 2. Import the `NgcFloatButtonModule`:
+#### 2. Import the `NgcFloatButtonModule` in your project:
 
 ```ts
 import {BrowserModule} from '@angular/platform-browser';
@@ -82,21 +83,28 @@ The FAB template
 
 #### @Input properties
 
-The `ngc-float-button` component has two `@Input` properties:
+`ngc-float-button` properties:
 
-`[open]="open"` and `[direction]="direction"`
+- `icon` property expects for `icon_name` listed in Google Material Icons site.
 
-`[open]` property waiting for `BehaviorSubject` type, with this you can open or close the FAB dispatching events.
+- `[open]` property expects for `BehaviorSubject` type, with this you can open or close the FAB dispatching events.
 
-Sample:
+- `disabled` property expects a `boolean` to toggle if a button is clickable. Defaults to `false`.
 
+- `color` property define the background color and expects a `background:{value}` valid value. Defaults to `#dd0031`.
+
+- `direction` property expects for `string` value type value that's accepted `top`, `right`, `bottom`, `left`. Defaults to `top`
+
+- `spaceBetweenButtons` - property expects a valid number value in `px` to define the space between each `ngc-float-item-button`, Defaults to `55`
+
+Sample: `[open]`
 
 ```Typescript
     ...
     //our parent component
 
-    // with this our FAB will be started open.
-    private open:BehaviorSubject<boolean> = new BehaviorSubject(true);
+    // with 'true' our FAB will be started open.
+    public open:BehaviorSubject<boolean> = new BehaviorSubject(true); // true is the initial state of FAB
 
     ...
 ```
@@ -111,9 +119,7 @@ Sample:
     ...
 ```
 
-`[direction]` property waiting for `string` type value that's accepted `top`, `right`, `bottom`, `left`, remember the `[property-binding]` is optional but if you need change this property dynamically it's required.
-
-Sample:
+Sample: `[direction]`
 
 ```HTML
     <div>
@@ -123,13 +129,20 @@ Sample:
         <button md-button (click)="direction='left'">Left</button>
     </div>
 
-    <ngc-float-button icon="add" [direction]="direction">
+    <ngc-float-button icon="add" direction="{{direction}}">
     ...
 ```
 
+`ngc-float-item-button` properties:
+
+- `icon` property expects for `icon_name` listed in Google Material Icons site.
+- `color` property define the background color and expects a `background:{value}` valid value. Defaults to `white`.
+- `disabled` property expects a `boolean` to toggle if a button is clickable. Defaults to `false`.
+- `content` property expects `string` value to show additional text in `ngc-float-item-button`
+
 #### @Output property
 
-You can listener events in `ngc-float-button` subscribing the `(events)` output.
+You can listen the all events emitted by `ngc-float-button` subscribing in the `(events)` observable output.
 
 Sample:
 

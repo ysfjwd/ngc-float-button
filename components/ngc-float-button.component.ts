@@ -22,11 +22,75 @@ import {
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'ngc-float-button',
-  styleUrls: ['./ngc-float-button.component.css'],
+  styles: [`
+
+  :host {
+    position: absolute;
+  }
+
+  .fab-menu {
+      box-sizing: border-box;
+      font-size: 20px;
+      width:55px;
+      height: 55px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9;
+  }
+
+  .fab-toggle {
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    color: white;
+    text-align: center;
+    line-height: 50px;
+    transform: translate3d(0, 0, 0);
+    transition: all ease-out 200ms;
+    z-index: 2;
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition-duration: 400ms;
+    transform: scale(1.1, 1.1) translate3d(0, 0, 0);
+    cursor: pointer;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+  }
+
+  .fab-menu .fab-toggle:hover {
+    transform: scale(1.2, 1.2) translate3d(0, 0, 0);
+  }
+
+  .fab-menu /deep/ .item {
+     opacity: 0;
+  }
+
+  .fab-menu.active /deep/ .item {
+     opacity: 1;
+  }
+
+  .fab-menu.active /deep/ .content-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fab-menu.active /deep/ .content {
+    display: block;
+  }
+
+  .fab-menu.active .fab-toggle {
+    transition-timing-function: linear;
+    transition-duration: 200ms;
+    transform: scale(0.8, 0.8) translate3d(0, 0, 0);
+  }
+
+  `],
   template: `
-    <nav class="fab-menu" [class.active]="state.getValue().display">
-        <a class="fab-toggle" (click)="toggle()">
-          <mat-icon class="material-content-icon"> {{icon}} </mat-icon>
+    <nav class="fab-menu" [class.active]="(state | async).display">
+        <a class="fab-toggle" (click)="toggle()" [style.backgroundColor]="color">
+          <mat-icon> {{icon}} </mat-icon>
         </a>
         <ng-content></ng-content>
     </nav>
@@ -36,26 +100,32 @@ import {
 export class NgcFloatButtonComponent implements AfterContentInit, OnDestroy, OnChanges {
   private elementref: HTMLElement;
   private subs: Subscription[] = [];
+  public state: BehaviorSubject<any>;
 
-  public state: BehaviorSubject<any> = new BehaviorSubject({
-    display: false,
-    direction: 'top',
-    event: 'start',
-    spaceBetweenButtons: 55
-  });
-
-  @Input() icon;
-  @Input() direction;
-  @Input() spaceBetweenButtons;
+  @Input() icon: string;
+  @Input() direction: string;
+  @Input() spaceBetweenButtons: number = 55;
   @Input() open: Subject<boolean>;
+  @Input() color: string = '#dd0031';
+  @Input() disabled: boolean = false;
   @Output() events: Subject<any> = new Subject();
   @ContentChildren(NgcFloatItemButtonComponent) buttons;
 
   constructor(private element: ElementRef, private cd: ChangeDetectorRef) {
     this.elementref = element.nativeElement;
+
+    this.state = new BehaviorSubject({
+      display: false,
+      direction: 'top',
+      event: 'start',
+      spaceBetweenButtons: this.spaceBetweenButtons
+    });
   }
 
   public toggle() {
+    if (this.disabled) {
+      return this.disabled;
+    }
     this.state.next({
       ...this.state.getValue(),
       display: !this.state.getValue().display,
@@ -88,7 +158,6 @@ export class NgcFloatButtonComponent implements AfterContentInit, OnDestroy, OnC
         style['transform'] = 'scale(1)';
         style['transition-duration'] = '0s';
 
-
         if (btn.timeout) {
           clearTimeout(btn.timeout);
         }
@@ -109,16 +178,25 @@ export class NgcFloatButtonComponent implements AfterContentInit, OnDestroy, OnC
 
   // get transition direction
   private getTranslate(i) {
+
+      let animation;
+
       switch (this.direction) {
         case 'right' :
-           return `translate3d(${ this.state.getValue().spaceBetweenButtons * i }px,0,0)`;
+           animation = `translate3d(${ this.state.getValue().spaceBetweenButtons * i }px,0,0)`;
+           break;
         case  'bottom' :
-           return `translate3d(0,${ this.state.getValue().spaceBetweenButtons * i }px,0)`;
+          animation = `translate3d(0,${ this.state.getValue().spaceBetweenButtons * i }px,0)`;
+          break;
         case 'left' :
-           return `translate3d(-${ this.state.getValue().spaceBetweenButtons * i }px,0,0)`;
+          animation = `translate3d(-${ this.state.getValue().spaceBetweenButtons * i }px,0,0)`;
+          break;
         default :
-           return `translate3d(0,-${ this.state.getValue().spaceBetweenButtons * i }px,0)`;
+          animation = `translate3d(0,-${ this.state.getValue().spaceBetweenButtons * i }px,0)`;
+          break;
       }
+
+      return animation;
   }
 
   /* some problems here */
@@ -184,7 +262,7 @@ export class NgcFloatButtonComponent implements AfterContentInit, OnDestroy, OnC
           });
 
           // make angular happy
-          this.cd.detectChanges();
+          this.cd.markForCheck();
         }
       });
 
@@ -201,7 +279,7 @@ export class NgcFloatButtonComponent implements AfterContentInit, OnDestroy, OnC
   }
 
   ngOnDestroy() {
-    this.subs.map(v => {
+    this.subs.forEach(v => {
       v.unsubscribe();
     });
   }
