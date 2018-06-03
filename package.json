@@ -1,6 +1,7 @@
 {
   "name": "ngc-float-button",
   "description": "Google Material Float Button - Implementation for Angular v4+",
+  "version": "6.0.0",
   "scripts": {
     "transpile": "ngc",
     "package": "rollup -c",
@@ -12,7 +13,7 @@
   "author": "Gustavo Costa - @GustavoCostaW",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": ">=4.4.4"
+    "@angular/core": ">=6.0.0"
   },
   "devDependencies": {
     "@angular/cdk": "^6.0.0",
